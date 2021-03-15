@@ -1,0 +1,58 @@
+# Substitue NAMEHERE with an appropriate name
+name: CI-NAME_HERE
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+          
+      - name: Generate Manifest
+        run: |
+          [ -e ./manifest.txt ] && rm ./manifest.txt
+          ./build-manifest.sh ./package-model-R2.0.json ./manifest.txt /tmp/reprepro              
+      
+      - name: Check if there are changes
+        id: changes
+        uses: UnicornGlobal/has-changes-action@v1.0.11
+      
+      - name: Setup
+        if: steps.changes.outputs.changed == 1
+        run: |
+          [ -e ./init.sh ] && ./init.sh
+          
+      - name: Configure GPG Key
+        if: steps.changes.outputs.changed == 1
+        run: |
+          mkdir -p ~/.gnupg/
+          printf "$GPG_SIGNING_KEY" | base64 --decode > ~/.gnupg/private.key
+          gpg --batch --import ~/.gnupg/private.key
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.DEB_REPO_KEY }}
+
+      - name: Generate Package Repository
+        if: steps.changes.outputs.changed == 1
+        run: |
+          export DEBEMAIL="regolith.linux@gmail.com"
+          export DEBFULLNAME="Regolith Linux"
+          ./build-deb-repo.sh package-model-R2.0.json ./docs /tmp/reprepro CODENAME_HERE
+
+      - name: Commit Files
+        if: steps.changes.outputs.changed == 1
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ./docs/*
+          git add ./manifest.txt
+          git commit -am "Automated repo update"
+          
+      - name: Push Changes
+        if: steps.changes.outputs.changed == 1
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
