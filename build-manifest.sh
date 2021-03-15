@@ -9,7 +9,7 @@ if [ "$#" -lt 3 ]; then
     exit 1
 fi
 
-source build-common.sh
+source pkgrepo-lib/build-common.sh
 
 PACKAGE_MODEL_FILE=$(realpath "$1")
 MANIFEST_FILE=$(realpath "$2")

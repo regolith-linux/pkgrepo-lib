@@ -10,7 +10,7 @@ if [ "$#" -lt 4 ]; then
     exit 1
 fi
 
-source build-common.sh
+source pkgrepo-lib/build-common.sh
 
 PACKAGE_MODEL_FILE=$(realpath "$1")
 REPO_PATH=$(realpath "$2")
