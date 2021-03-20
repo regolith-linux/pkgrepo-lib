@@ -15,7 +15,9 @@ jobs:
       - name: Generate Manifest
         run: |
           [ -e ./manifest.txt ] && rm ./manifest.txt
-          ./build-manifest.sh ./package-model-R2.0.json ./manifest.txt /tmp/reprepro              
+          ./build-manifest.sh ./package-model-R2.0.json ./manifest-raw.txt /tmp/reprepro
+          sort ./manifest-raw.txt > ./manifest.txt
+          rm ./manifest-raw.txt
       
       - name: Check if there are changes
         id: changes
