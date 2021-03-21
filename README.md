@@ -68,4 +68,4 @@ Generates a list of source package metadata: repo, branch, commit.  This list is
 
 # Github Workflow
 
-A sample [github workflow](blob/master/.github/workflows/ci-NAME_HERE.yml) file demonstrates the generation of a Debian repository.
+A sample [github workflow](.github/workflows/ci-NAME_HERE.yml) file demonstrates the generation of a Debian repository.
