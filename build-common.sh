@@ -9,21 +9,21 @@ print_banner() {
 
 # Checkout
 checkout() {
-    repo_url=${packageModel[gitRepoUrl]}
+    repo_url=${packageModel[source]}
     repo_path=${repo_url##*/}
     repo_name=${repo_path%%.*}
     
     if [ -d "$BUILD_DIR/$repo_name" ]; then
         echo "Deleting existing repo, $repo_name"
-        rm -Rfv "$BUILD_DIR/$repo_name"
+        rm -Rfv "${BUILD_DIR:?}/$repo_name"
     fi
 
-    print_banner "Checking out ${packageModel[gitRepoUrl]}"
+    print_banner "Checking out ${packageModel[source]}"
 
-    cd $BUILD_DIR
-    git clone --recursive ${packageModel[gitRepoUrl]} -b ${packageModel[packageBranch]}
+    cd "$BUILD_DIR" || exit
+    git clone --recursive "${packageModel[source]}" -b "${packageModel[branch]}"
     
-    cd - > /dev/null 2>&1
+    cd - > /dev/null 2>&1  || exit
 }
 
 sanitize_git() {
@@ -39,37 +39,71 @@ sanitize_git() {
 
 # Stage package source in prep to build 
 stage_source() {
-    print_banner "Preparing source for ${packageModel[packageName]}"
-    cd $BUILD_DIR/${packageModel[buildPath]}
+    print_banner "Preparing source for ${packageModel[name]}"
+    cd "$BUILD_DIR/${packageModel[name]}"  || exit
     full_version=$(dpkg-parsechangelog --show-field Version)
     debian_version="${full_version%-*}"
-    cd $BUILD_DIR
+    cd "$BUILD_DIR" || exit
     
     if [ "${packageModel[upstreamTarball]}" != "" ]; then
         echo "Downloading source from ${packageModel[upstreamTarball]}..."
-        wget ${packageModel[upstreamTarball]} -O ${packageModel[buildPath]}/../${packageModel[packageName]}\_$debian_version.orig.tar.gz
+        wget ${packageModel[upstreamTarball]} -O ${packageModel[name]}/../${packageModel[name]}\_$debian_version.orig.tar.gz
     else
         echo "Generating source tarball from git repo."
-        tar cfzv ${packageModel[packageName]}\_${debian_version}.orig.tar.gz --exclude .git\* --exclude debian ${packageModel[buildPath]}/../${packageModel[packageName]}
+        tar cfzv ${packageModel[name]}\_${debian_version}.orig.tar.gz --exclude .git\* --exclude debian ${packageModel[name]}/../${packageModel[name]}
     fi
 }
 
 # Build
 build_src_package() {
-    print_banner "Building source package ${packageModel[packageName]}"
-    cd $BUILD_DIR/${packageModel[buildPath]}
+    print_banner "Building source package ${packageModel[name]}"
+    cd "$BUILD_DIR/${packageModel[name]}" || exit
     
     sanitize_git    
     sudo apt build-dep -y .
     debuild -S -sa
-    cd $BUILD_DIR
+    cd "$BUILD_DIR" || exit
 }
 
 build_bin_package() {
-    print_banner "Building binary package ${packageModel[packageName]}"
-    cd $BUILD_DIR/${packageModel[buildPath]}
+    print_banner "Building binary package ${packageModel[name]}"
+    cd "$BUILD_DIR/${packageModel[name]}"  || exit
     
     sanitize_git
     debuild -sa -b
-    cd $BUILD_DIR
+    cd "$BUILD_DIR" || exit
+}
+
+# The following look extracts package objects from the model, creates a map of the values,
+# and then passes that map to bash functions for processing.  The script that calls this function
+# must declare a function called 'handle_package' and the model data will be provided in a map
+# called 'packageModel'.
+#
+# For each iteration, if $PACKAGE_FILTER is defined, eval does not occur if string match of 'name' fails
+#
+# Model fields:
+# modelDescription: Description for package model (common for all packages in model file)
+# name: (Optional) Regolith name for a linux package. Default is Debian naming if exists.  May be overridden
+#           by specifying property 'name' in object.  If unspecifed object key is used.
+# source: SCM URL from which the package can be cloned.
+# branch: branch to pull source from to build
+# upstreamTarball: (optional)
+read_package_model() {
+    jq -rc '.packages | keys | .[]' < "$PACKAGE_MODEL_FILE" | while IFS='' read -r package; do
+        # Set the package name and model desc
+        packageModel["name"]="$package"    
+        packageModel["modelDescription"]=$(jq -r ".description.title" < "$PACKAGE_MODEL_FILE" )
+        # Set all kvps on the associated object
+        while IFS== read -r key value; do
+            packageModel["$key"]="$value"
+        done < <( jq -r ".packages.\"$package\" | to_entries | .[] | .key + \"=\" + .value" < "$PACKAGE_MODEL_FILE" )
+
+        # If a package filter was specified, match filter.
+        if [[ -n "$PACKAGE_FILTER" && "$PACKAGE_FILTER" != "${packageModel[name]}" ]]; then
+            continue
+        fi
+
+        # Apply functions to package model
+        handle_package
+    done
 }

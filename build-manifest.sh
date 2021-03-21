@@ -9,17 +9,27 @@ if [ "$#" -lt 3 ]; then
     exit 1
 fi
 
-source pkgrepo-lib/build-common.sh
+# Load common functions
+if [ -f pkgrepo-lib/build-common.sh ]; then
+    source pkgrepo-lib/build-common.sh
+elif [ -f build-common.sh ]; then
+    source build-common.sh
+else
+    echo "Unable to find build-common.sh, aborting."
+    exit 1
+fi
 
+# shellcheck disable=SC2034
 PACKAGE_MODEL_FILE=$(realpath "$1")
 MANIFEST_FILE=$(realpath "$2")
 BUILD_DIR=$3
-PACKAGE=$4
+# shellcheck disable=SC2034
+PACKAGE_FILTER=$4
 
 # Print manifest
 append_manifest() {    
-    cd $BUILD_DIR/${packageModel[buildPath]}
-    REPO_NAME=${packageModel[buildPath]}
+    cd $BUILD_DIR/${packageModel[name]}
+    REPO_NAME=${packageModel[name]}
     BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
     COMMIT_HASH=$(git rev-parse --short HEAD)
 
@@ -31,6 +41,11 @@ env_check() {
     hash git 2>/dev/null || { echo >&2 "Required command git is not found on this system. Please install it. Aborting."; exit 1; }
 }
 
+handle_package() {
+    checkout
+    append_manifest
+}
+
 # Main
 set -e
 
@@ -39,21 +54,8 @@ if [ ! -d $BUILD_DIR ]; then
     mkdir -p $BUILD_DIR
 fi
 
-print_banner "Generating packages in $BUILD_DIR"
+print_banner "Generating package manifest $MANIFEST_FILE"
 
 typeset -A packageModel
 
-cd $BUILD_DIR
-
-cat "$PACKAGE_MODEL_FILE" | jq -rc '.packages[]' | while IFS='' read -r package; do
-    while IFS== read -r key value; do
-        packageModel["$key"]="$value"
-    done < <( echo $package | jq -r 'to_entries | .[] | .key + "=" + .value')
-
-    if [[ ! -z "$PACKAGE" && "$PACKAGE" != "${packageModel[packageName]}" ]]; then
-        continue
-    fi
-
-    checkout
-    append_manifest
-done
+read_package_model

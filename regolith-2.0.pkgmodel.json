@@ -1,0 +1,15 @@
+{
+  "description": {
+    "title": "Package metadata for Regolith 2.0"
+  },
+  "packages": {
+    "regolith-session": {
+      "source": "https://github.com/regolith-linux/regolith-session.git",      
+      "branch": "ubuntu/focal"
+    },
+    "i3-snapshot": {
+      "source": "https://github.com/regolith-linux/i3-snapshot.git",
+      "branch": "master"
+    }
+  }
+}

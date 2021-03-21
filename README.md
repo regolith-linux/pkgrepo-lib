@@ -1,25 +1,46 @@
 # pkgrepo-lib
 
-This contains a set of shell scripts and a tweakable github action that can be used to generate Regolith packages for some target distribution/release.
+This contains a package model, shell functions, and a github action that can be used to generate Regolith packages for some target distribution/release.
 
 ## Package Model
 
-Manifest and package generation use a package model as a primary source.  A package model is a JSON document with a root property "packages" of a list of objects as below:
+Manifest and package generation use a package model as a primary source.  A package model is a JSON document with root objects `description` and `packages` as below:
 
 ```json
 {
-    "packages": [
-        {
-            "gitRepoUrl": "https://github.com/something-something.git",
-            "packageName": ?,
-            "buildPath": ?,
-            "upstreamTarball": ?,
-            "packageBranch": ?
-        },
-        ...
-    ],
-    ...
+  "description": {
+    "title": ...
+  },
+  "packages": {
+    "some-package-name": {
+      "source": "some-package-git-url",      
+      "branch": "some-branch-name"
+    },
+    "another-package": {
+      ...
+    }
+  }
 }
+```
+
+### Model Fields
+
+```
+modelDescription: Description for package model (common for all packages in model file)
+name: (Optional) Regolith name for a linux package. Default is Debian naming if exists.  May be overridden
+          by specifying property 'name' in object.  If unspecifed object key is used.
+source: SCM URL from which the package can be cloned.
+branch: branch to pull source from to build
+upstreamTarball: (optional) download a file and extract rather than clone git repo
+```
+
+### Overriding Values
+
+This particular structure was chosen to allow for parent/child customization of a package model for a specific target environment.  For example, on some particular distribution a given package may be called something other than what it's called in Debian.  For that, a package diff file could be added to the distro-specific repo such that the final model file contains the distro-specific name.
+
+Example:
+```
+tbd
 ```
 
 ## Script Summary
@@ -28,6 +49,9 @@ Manifest and package generation use a package model as a primary source.  A pack
 
 Some common functions for dealing with the package model.
 
+### build-demo.sh
+
+An example shell script that calls the common functions to process the package model.  This script simply prints out the model values.  The script is intended to be used as a starting point for other package build scripts.
 ### build-dep-repo.sh
 
 Generates a Debian package repository.  Can be used as an example to call into other package manager tooling.
