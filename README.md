@@ -55,14 +55,14 @@ tbd
 
 Some common functions for dealing with the package model.
 
-### build-demo.sh
+### [build-demo.sh](build-demo.sh)
 
 An example shell script that calls the common functions to process the package model.  This script simply prints out the model values.  The script is intended to be used as a starting point for other package build scripts.
-### build-dep-repo.sh
+### [build-dep-repo.sh](build-dep-repo.sh)
 
 Generates a Debian package repository.  Can be used as an example to call into other package manager tooling.
 
-### build-manifest.sh
+### [build-manifest.sh](build-manifest.sh)
 
 Generates a list of source package metadata: repo, branch, commit.  This list is used to determine when a package should be rebuilt.  The input to this script is a package model.
 
