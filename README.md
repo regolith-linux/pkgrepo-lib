@@ -31,14 +31,12 @@ Manifest and package generation use a package model as a primary source.  A pack
 
 ## Model Fields
 
-```
-modelDescription: Description for package model (common for all packages in model file)
-name: (Optional) Regolith name for a linux package. Default is Debian naming if exists.  May be overridden
-          by specifying property 'name' in object.  If unspecifed object key is used.
-source: SCM URL from which the package can be cloned.
-branch: branch to pull source from to build
-upstreamTarball: (optional) download a file and extract rather than clone git repo
-```
+
+* `modelDescription`: Description for package model (common for all packages in model file)
+* `name`: Regolith name for a linux package. Default is Debian naming if exists.  May be overridden by specifying property 'name' in object.  If unspecified the object key is used.
+* `source`: SCM URL from which the package can be cloned.
+* `branch`: branch to pull source from to build
+* `upstreamTarball`: (optional) download a file and extract rather than clone git repo
 
 ## Overriding Values
 
