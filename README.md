@@ -14,9 +14,11 @@ Manifest and package generation use a package model as a primary source.  A pack
   "packages": {
     "some-package-name": {
       "source": "some-package-git-url",      
-      "branch": "some-branch-name"
+      "branch": "some-branch-name",
+      "name": "some-distro-specific-name"
     },
     "another-package": {
+      "upstreamTarball": "some-url-to-tar.gz",
       ...
     }
   }
