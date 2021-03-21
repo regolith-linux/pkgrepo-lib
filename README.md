@@ -51,7 +51,7 @@ tbd
 
 # Script Summary
 
-### build-common.sh
+### [build-common.sh](build-common.sh)
 
 Some common functions for dealing with the package model.
 
