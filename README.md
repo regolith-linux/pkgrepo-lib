@@ -2,6 +2,12 @@
 
 This contains a package model, shell functions, and a github action that can be used to generate Regolith packages for some target distribution/release.
 
+### Quick Start
+
+```bash
+$ jq -s '.[0] * .[1]' regolith-2.0.pkgmodel.json superdistro-v1.pkgmodel.json | ./build-demo.sh /tmp
+```
+
 ## Status
 
 Everything in this repo is in active development and subject to change.
@@ -13,17 +19,16 @@ Manifest and package generation use a package model as a primary source.  A pack
 ```json
 {
   "description": {
-    "title": ...
+    "title": "A one line description of what this model is for"
   },
   "packages": {
-    "some-package-name": {
-      "source": "some-package-git-url",      
-      "branch": "some-branch-name",
-      "name": "some-distro-specific-name"
+    "some-new-package-name": {
+      "source": "some-package-git-url",
+      "branch": "some-branch-name"
     },
-    "another-package": {
-      "upstreamTarball": "some-url-to-tar.gz",
-      ...
+    "existing-package-but-different-source": {
+      "name": "some-distro-specific-name",
+      "upstreamTarball": "some-url-to-tar.gz"
     },
     "an-unneeded-package": null
   }
@@ -32,11 +37,10 @@ Manifest and package generation use a package model as a primary source.  A pack
 
 ## Model Fields
 
-
-* `modelDescription`: Description for package model (common for all packages in model file)
 * `name`: Regolith name for a linux package. Default is Debian naming if exists.  May be overridden by specifying property 'name' in object.  If unspecified the object key is used.
 * `source`: SCM URL from which the package can be cloned.
 * `branch`: branch to pull source from to build
+* `modelDescription`: Description for package model (common for all packages in model file)
 * `upstreamTarball`: (optional) download a file and extract rather than clone git repo
 
 ## Model Customization
