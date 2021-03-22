@@ -9,6 +9,11 @@ print_banner() {
 
 # Checkout
 checkout() {
+    if [ -z "${packageModel[source]}" ]; then 
+        echo "Package model is invalid.  Model field 'source' undefined, aborting."
+        exit 1
+    fi
+
     repo_url=${packageModel[source]}
     repo_path=${repo_url##*/}
     repo_name=${repo_path%%.*}
@@ -18,7 +23,12 @@ checkout() {
         rm -Rfv "${BUILD_DIR:?}/$repo_name"
     fi
 
-    print_banner "Checking out ${packageModel[source]}"
+    if [ ! -d "$BUILD_DIR" ]; then 
+        echo "Creating build directory $BUILD_DIR"
+        mkdir -p "$BUILD_DIR" || { echo "Failed to create build dir $BUILD_DIR, aborting."; exit 1; }
+    fi
+
+    print_banner "Checking out ${packageModel[source]} into $BUILD_DIR"
 
     cd "$BUILD_DIR" || exit
     git clone --recursive "${packageModel[source]}" -b "${packageModel[branch]}"
@@ -74,6 +84,21 @@ build_bin_package() {
     cd "$BUILD_DIR" || exit
 }
 
+cache_model() {    
+    PACKAGE_MODEL_FILE="$BUILD_DIR/pkg-model.json"
+
+    if [ -f "$PACKAGE_MODEL_FILE" ]; then 
+        echo "Removing stale cache $PACKAGE_MODEL_FILE"
+        rm "$PACKAGE_MODEL_FILE" || { echo "Failed to delete cache file, aborting."; exit 1; }
+    fi
+
+    cat >"$PACKAGE_MODEL_FILE"
+
+#    while IFS= read -r line; do
+#        printf '%s\n' "$line" > "$PACKAGE_MODEL_FILE"
+#    done
+}
+
 # The following look extracts package objects from the model, creates a map of the values,
 # and then passes that map to bash functions for processing.  The script that calls this function
 # must declare a function called 'handle_package' and the model data will be provided in a map
@@ -89,7 +114,7 @@ build_bin_package() {
 # branch: branch to pull source from to build
 # upstreamTarball: (optional)
 read_package_model() {
-    jq -rc '.packages | keys | .[]' < "$PACKAGE_MODEL_FILE" | while IFS='' read -r package; do
+    jq -rc 'delpaths([path(.[][]| select(.==null))]) | .packages | keys | .[]' < "$PACKAGE_MODEL_FILE" | while IFS='' read -r package; do
         # Set the package name and model desc
         packageModel["name"]="$package"    
         packageModel["modelDescription"]=$(jq -r ".description.title" < "$PACKAGE_MODEL_FILE" )
@@ -104,6 +129,7 @@ read_package_model() {
         fi
 
         # Apply functions to package model
+        print_banner "handle_package(${packageModel[name]})"
         handle_package
     done
 }

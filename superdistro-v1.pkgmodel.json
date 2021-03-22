@@ -1,0 +1,15 @@
+{
+  "description": {
+    "title": "Package metadata for Regolith 2.0 for superdistro release v1"
+  },
+  "packages": {
+    "i3-gaps-wm": {
+      "branch": "ubuntu/bionic"
+    },
+    "i3-snapshot": null,
+    "polybar": {
+      "source": "https://github.com/polybar/polybar.git",
+      "branch": "3.4"
+    }
+  }
+}

@@ -2,7 +2,7 @@
 # This script can be used to generate Debian packages and add them to a local debian repository.
 
 # Input Parameters
-if [ "$#" -lt 3 ]; then
+if [ "$#" -lt 2 ]; then
     echo "This script prints a manifest from package repos.  It uses a package model file that describes each package."
     echo "If no package name is specified from the model, all packages are built."
     echo "Usage: build-manifest.sh <package model> <manifest file> <temp build dir> [package]"
@@ -20,11 +20,10 @@ else
 fi
 
 # shellcheck disable=SC2034
-PACKAGE_MODEL_FILE=$(realpath "$1")
-MANIFEST_FILE=$(realpath "$2")
-BUILD_DIR=$3
+MANIFEST_FILE=$(realpath "$1")
+BUILD_DIR=$2
 # shellcheck disable=SC2034
-PACKAGE_FILTER=$4
+PACKAGE_FILTER=$3
 
 # Print manifest
 append_manifest() {    
@@ -48,6 +47,7 @@ handle_package() {
 
 # Main
 set -e
+# set -x
 
 env_check
 if [ ! -d $BUILD_DIR ]; then
@@ -58,4 +58,5 @@ print_banner "Generating package manifest $MANIFEST_FILE"
 
 typeset -A packageModel
 
+cache_model
 read_package_model
