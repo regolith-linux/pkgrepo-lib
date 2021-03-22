@@ -14,10 +14,10 @@
 # handle_package() : This function is called to handle each source package that passes the filter.
 
 # Input parameter handling
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 1 ]; then
     echo "This script demonstrates reading a regolith package model for building packages."
     echo "If no package name is specified from the model, all packages are built."
-    echo "Usage: build-something.sh <package model> <temp build dir> [package filter]"
+    echo "Usage: build-something.sh <temp build dir> [package filter]"
     exit 1
 fi
 
@@ -32,10 +32,9 @@ else
 fi
 
 # shellcheck disable=SC2034
-PACKAGE_MODEL_FILE=$(realpath "$1")
-BUILD_DIR=$2
+BUILD_DIR=$1
 # shellcheck disable=SC2034
-PACKAGE_FILTER=$3
+PACKAGE_FILTER=$2
 
 # Example package processing function
 print_model_entry() {
@@ -67,4 +66,5 @@ print_banner "This script might be buidling packages in $BUILD_DIR someday."
 
 typeset -A packageModel
 
+cache_model
 read_package_model

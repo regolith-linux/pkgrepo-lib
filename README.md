@@ -24,7 +24,8 @@ Manifest and package generation use a package model as a primary source.  A pack
     "another-package": {
       "upstreamTarball": "some-url-to-tar.gz",
       ...
-    }
+    },
+    "an-unneeded-package": null
   }
 }
 ```
@@ -38,13 +39,29 @@ Manifest and package generation use a package model as a primary source.  A pack
 * `branch`: branch to pull source from to build
 * `upstreamTarball`: (optional) download a file and extract rather than clone git repo
 
-## Overriding Values
+## Model Customization
 
-This particular structure was chosen to allow for parent/child customization of a package model for a specific target environment.  For example, on some particular distribution a given package may be called something other than what it's called in Debian.  For that, a package diff file could be added to the distro-specific repo such that the final model file contains the distro-specific name.
+This particular structure was chosen to allow for parent/child customization of a package model for a specific target environment.  For example, on some particular distribution a given package may be called something other than what it's called in Debian.  For that, a package diff file could be added to the distro-specific repo such that the final model file contains the distro-specific name.  Existing packages can be removed by overriding the upstream object reference as `null`.
 
-Example:
+For shell scrips, `jq` can be used to merge JSON trees.  The build tool will take the model from `stdin` which allows for open ended customization of models before package building.  The following example illustrates how `jq` can be used to merge trees:
+
 ```
-tbd
+jq -s '.[0] * .[1]' file1.json file2.json
+```
+
+Example with `build-demo.sh`:
+```
+$ jq -s '.[0] * .[1]' regolith-2.0.pkgmodel.json superdistro-v1.pkgmodel.json | ./build-demo.sh /tmp
+***********************************************************
+** This script might be buidling packages in /tmp someday.
+***********************************************************
+***********************************************************
+** handle_package(ayu-theme)
+***********************************************************
+
+Doing something with ayu-theme
+Get source from https://github.com/regolith-linux/ayu-theme.git on branch master
+Now maybe check it out into /tmp/ayu-theme and build something..?
 ```
 
 # Script Summary
