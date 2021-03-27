@@ -1,8 +1,10 @@
-# pkgrepo-lib
+# regolith-creche
 
-This contains a package model, shell functions, and a github action that can be used to generate Regolith packages for some target distribution/release.
+This contains a package model, shell functions, examples, and a github action that can be used to generate Regolith packages for some target distribution/release. This repo's functionality is scoped to the execution of logic against regolith package models to produce artifacts for consumption.
 
 ### Quick Start
+
+To print the source of each Regolith package after the "superdistro-v1" transform is applied to the base package model, run:
 
 ```bash
 $ jq -s '.[0] * .[1]' regolith-2.0.pkgmodel.json superdistro-v1.pkgmodel.json | ./build-demo.sh /tmp
