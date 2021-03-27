@@ -110,6 +110,9 @@ $ cp lib/creche/.github/workflows/ci-NAME_HERE.yml .github/workflows/builder.yml
 $ # edit .github/workflows/builder.yml and make necessary changes
 
 3. Add Regolith secret key to the secrets associate with repo
+```bash
+$ gpg --export-secret-keys KEY-ID | base64 | xclip -se c # paste this as a secret called DEB_REPO_KEY
+```
 
 4. Create static repository scaffolding (Debian-based repos only):
 ```bash
@@ -129,3 +132,5 @@ EOT
 ```bash
 $ echo "buildme" > manifest.txt
 ```
+
+6. (Optional) If custom logic needs to run after change detection occurs, create an executable script `init.sh` in the root of the repository.

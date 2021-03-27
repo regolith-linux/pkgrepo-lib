@@ -31,7 +31,9 @@ jobs:
       - name: Setup
         if: steps.changes.outputs.changed == 1
         run: |
-          [ -e ./init.sh ] && ./init.sh
+          if [ -f ./init.sh ]; then
+            ./init.sh
+          fi
           
       - name: Configure GPG Key
         if: steps.changes.outputs.changed == 1
@@ -47,6 +49,7 @@ jobs:
         run: |
           export DEBEMAIL="regolith.linux@gmail.com"
           export DEBFULLNAME="Regolith Linux"
+          sudo apt install devscripts reprepro
           cat model.json | ./lib/creche/build-deb-repo.sh ./docs /tmp/reprepro CODENAME_HERE
 
 #      - name: Test Install
