@@ -4,10 +4,10 @@ This contains a package model, shell functions, examples, and a github action th
 
 ### Quick Start
 
-To print the source of each Regolith package after the "superdistro-v1" transform is applied to the base package model, run:
+To print the source of each Regolith package after the "example distro v1" transform is applied to the base package model, run:
 
 ```bash
-$ jq -s '.[0] * .[1]' regolith-2.0.pkgmodel.json superdistro-v1.pkgmodel.json | ./build-demo.sh /tmp
+$ jq -s '.[0] * .[1]' regolith-2.0.pkgmodel.json example-distro-v1.pkgmodel.json | ./build-demo.sh /tmp
 ```
 
 ## Status
