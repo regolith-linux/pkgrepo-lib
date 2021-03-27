@@ -47,7 +47,7 @@ jobs:
         run: |
           export DEBEMAIL="regolith.linux@gmail.com"
           export DEBFULLNAME="Regolith Linux"
-          ./lib/creche/build-deb-repo.sh ./model.json ./docs /tmp/reprepro CODENAME_HERE
+          cat model.json | ./lib/creche/build-deb-repo.sh ./docs /tmp/reprepro CODENAME_HERE
 
 #      - name: Test Install
 #        if: steps.changes.outputs.changed == 1
