@@ -11,8 +11,8 @@ if [ "$#" -lt 4 ]; then
 fi
 
 # Load common functions
-if [ -f pkgrepo-lib/build-common.sh ]; then
-    source pkgrepo-lib/build-common.sh
+if [ -f lib/creche/build-common.sh ]; then
+    source lib/creche/build-common.sh
 elif [ -f build-common.sh ]; then
     source build-common.sh
 else
