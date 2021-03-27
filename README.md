@@ -90,3 +90,42 @@ Generates a list of source package metadata: repo, branch, commit.  This list is
 # Github Workflow
 
 A sample [github workflow](.github/workflows/ci-NAME_HERE.yml) file demonstrates the generation of a Debian repository.
+
+# HOWTO
+
+## Setup a new package repository
+
+This action is to create a new git repo that uses the creche model and scripts for generation of packages for some target distribution / version.
+
+1. Create repo, add submodule
+```bash
+$ git clone https://github.com/regolith-linux/repo-ubuntu-bionic.git
+$ git submodule add -b release https://github.com/regolith-linux/regolith-creche.git lib/creche
+```
+
+2. Add GitHub workflow and customize as needed
+```bash
+$ mkdir -p .github/workflows
+$ cp lib/creche/.github/workflows/ci-NAME_HERE.yml .github/workflows/builder.yml
+$ # edit .github/workflows/builder.yml and make necessary changes
+
+3. Add Regolith secret key to the secrets associate with repo
+
+4. Create static repository scaffolding (Debian-based repos only):
+```bash
+$ mkdir -p docs/conf
+$ cat <<EOT >> docs/conf/distributions
+Origin: regolith-linux.github.io/REPO-NAME-HERE
+Label: Regolith Desktop Environment
+Codename: CODENAME-HERE
+Architectures: amd64 source
+Components: main
+Description: Regolith DETAILS-HERE
+SignWith: KEY-ID-HERE
+EOT
+```
+
+5. Add an empty manifest
+```bash
+$ echo "buildme" > manifest.txt
+```

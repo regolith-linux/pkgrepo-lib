@@ -11,11 +11,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Generate Model
+        run: |
+          jq -s '.[0] * .[1]' ./lib/creche/regolith-2.0.pkgmodel.json SOME-CHANGES.json > model.json
           
       - name: Generate Manifest
         run: |
           [ -e ./manifest.txt ] && rm ./manifest.txt
-          ./build-manifest.sh ./package-model-R2.0.json ./manifest-raw.txt /tmp/reprepro
+          ./lib/creche/build-manifest.sh ./model.json ./manifest-raw.txt /tmp/manifest
           sort ./manifest-raw.txt > ./manifest.txt
           rm ./manifest-raw.txt
       
@@ -42,7 +47,14 @@ jobs:
         run: |
           export DEBEMAIL="regolith.linux@gmail.com"
           export DEBFULLNAME="Regolith Linux"
-          ./build-deb-repo.sh package-model-R2.0.json ./docs /tmp/reprepro CODENAME_HERE
+          ./lib/creche/build-deb-repo.sh ./model.json ./docs /tmp/reprepro CODENAME_HERE
+
+#      - name: Test Install
+#        if: steps.changes.outputs.changed == 1
+#        run: |
+#          echo "deb [trusted=yes] file:/tmp/reprepro ./" > /etc/apt/sources.list.d/regolith-test.list
+#          apt update
+#          apt install regolith-desktop-small
 
       - name: Commit Files
         if: steps.changes.outputs.changed == 1
