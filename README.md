@@ -98,6 +98,7 @@ A sample [github workflow](.github/workflows/ci-NAME_HERE.yml) file demonstrates
 This action is to create a new git repo that uses the creche model and scripts for generation of packages for some target distribution / version.  This assumes that the repo content is generated into the `./docs` directory in the `master` branch on the repository.
 
 1. Create repo, add submodule
+
 ```bash
 $ git clone https://github.com/regolith-linux/repo-ubuntu-bionic.git
 $ git submodule add -b release https://github.com/regolith-linux/regolith-creche.git lib/creche
@@ -120,6 +121,7 @@ $ gpg --export-secret-keys KEY-ID | base64 | xclip -se c # paste this as a secre
 ```
 
 5. Create static repository scaffolding (Debian-based repos only):
+
 ```bash
 $ mkdir -p docs/conf
 $ cat <<EOT >> docs/conf/distributions
@@ -133,15 +135,22 @@ SignWith: KEY-ID-HERE
 EOT
 ```
 
-5. Add Regolith public key to docs root.  Can be retrieved from other working Regolith package repos.
+6. Add Regolith public key to docs root.  Can be retrieved from other working Regolith package repos.
 
 ```bash
 $ cp archive.key docs/
 ```
 
 7. Add an empty manifest
+
 ```bash
 $ echo "buildme" > manifest.txt
 ```
 
-8. Update Github repo configuration to specify github pages in master/docs with custom domain of `[distro-version].regolith-desktop.org`.
+8. Add a NOP model transform
+
+```bash
+$ echo "{}" > model-customizations.json
+```
+
+9. Update Github repo configuration to specify github pages in master/docs with custom domain of `[distro-version].regolith-desktop.org`.

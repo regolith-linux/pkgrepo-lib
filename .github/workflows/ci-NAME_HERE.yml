@@ -15,7 +15,7 @@ jobs:
           submodules: 'true'
       - name: Generate Model
         run: |
-          jq -s '.[0] * .[1]' ./lib/creche/regolith-2.0.pkgmodel.json SOME-CHANGES.json > model.json
+          jq -s '.[0] * .[1]' ./lib/creche/regolith-2.0.pkgmodel.json model-customizations.json > model.json
           
       - name: Generate Manifest
         run: |
