@@ -2,7 +2,16 @@
 
 This contains a package model, shell functions, examples, and a github action that can be used to generate Regolith packages for some target distribution/release. This repo's functionality is scoped to the execution of logic against regolith package models to produce artifacts for consumption.
 
-### Quick Start
+Repositories are built by applying each package in the model to some bash script function.  In the case of Debian and Ubuntu, the `reprepro` tool is used to generate a Debian repository.
+
+#### Workflow
+
+1. Perform transforms on the general model for specific needs of the target distribution (add packages, change sources, etc.)
+2. Run build script (scripts for Debian repositories are implemented, others are not)
+3. For each package run some distribution specific set of commands to generate a package (and any additional commands for a repository)
+4. Results are published back to Github as docs (or some other thing depending on the constraints of the target distribution)
+
+## Quick Start
 
 To print the source of each Regolith package after the "example distro v1" transform is applied to the base package model, run:
 
