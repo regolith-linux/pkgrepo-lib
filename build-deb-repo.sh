@@ -128,7 +128,7 @@ handle_package() {
 
 # Main
 set -e
-set -x
+# set -x
 
 env_check
 if [ ! -d "$BUILD_DIR" ]; then
