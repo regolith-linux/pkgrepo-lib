@@ -1,9 +1,13 @@
-# Substitue NAMEHERE with an appropriate name
-name: CI-NAME_HERE
+name: builder
 
 on:
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -28,12 +32,12 @@ jobs:
         id: changes
         uses: UnicornGlobal/has-changes-action@v1.0.11
       
-      - name: Setup
-        if: steps.changes.outputs.changed == 1
-        run: |
-          if [ -f ./init.sh ]; then
-            ./init.sh
-          fi
+#      - name: Setup
+#        if: steps.changes.outputs.changed == 1
+#        run: |
+#          if [ -f ./init.sh ]; then
+#            ./init.sh
+#          fi
           
       - name: Configure GPG Key
         if: steps.changes.outputs.changed == 1
