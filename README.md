@@ -58,7 +58,7 @@ Manifest and package generation use a package model as a primary source.  A pack
 
 This particular structure was chosen to allow for parent/child customization of a package model for a specific target environment.  For example, on some particular distribution a given package may be called something other than what it's called in Debian.  For that, a package diff file could be added to the distro-specific repo such that the final model file contains the distro-specific name.  Existing packages can be removed by overriding the upstream object reference as `null`.
 
-For shell scrips, `jq` can be used to merge JSON trees.  The build tool will take the model from `stdin` which allows for open ended customization of models before package building.  The following example illustrates how `jq` can be used to merge trees:
+For shell scrips, `jq` can be used to merge JSON documents.  The build tool will take the model from `stdin` which allows for open ended customization of models before package building.  The following example illustrates how `jq` can be used to merge trees:
 
 ```
 jq -s '.[0] * .[1]' file1.json file2.json
@@ -165,3 +165,54 @@ $ echo "{}" > model-customizations.json
 9. Update Github repo configuration to specify github pages in master/docs with custom domain of `[distro-version].regolith-desktop.org`.
 
 10. Push changes to Github.  From this point there should be a runnable workflow in the repo.  If everything went well running this workflow will result in a populated package archive.
+
+# FAQ
+
+### How can package models be customized
+
+#### Add Packages to Model
+
+Packages can be removed from the model by overriding them from the general model and setting them to `null`.
+
+Example:
+
+```json
+{
+  "packages": {
+    "regolith-other-thing": {
+      "source": "https://github.com/sombody/regolith-other-thing.git",
+      "branch": "release"
+    }
+  }
+}
+```
+
+#### Remove Packages from Model
+
+Packages can be removed from the model by overriding them from the general model and setting them to `null`.
+
+Example:
+
+```json
+{
+  "packages": {
+    "regolith-session": null
+  }
+}
+```
+
+#### Replace one package source for another
+
+The source URL can be changed for a given package by overriding the `source` property.
+
+Example:
+
+```json
+{
+  "packages": {
+    "regolith-session": {
+      "source": "https://github.com/bobs-submarine-part-emporium/regolith-session.git"
+    } 
+  }
+}
+```
