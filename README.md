@@ -154,3 +154,5 @@ $ echo "{}" > model-customizations.json
 ```
 
 9. Update Github repo configuration to specify github pages in master/docs with custom domain of `[distro-version].regolith-desktop.org`.
+
+10. Push changes to Github.  From this point there should be a runnable workflow in the repo.  If everything went well running this workflow will result in a populated package archive.
