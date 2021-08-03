@@ -27,6 +27,10 @@
       "source": "https://github.com/regolith-linux/fonts-materialdesignicons-webfont.git",
       "branch": "master"
     },
+    "i3": {
+      "source": "https://github.com/regolith-linux/i3.git",
+      "branch": "next"
+    },
     "i3-gaps-wm": {
       "source": "https://github.com/regolith-linux/i3-gaps-wm.git",
       "branch": "ubuntu/focal"
