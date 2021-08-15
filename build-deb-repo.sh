@@ -70,6 +70,7 @@ source_pkg_exists() {
 
 # Publish
 publish_deb() {    
+    set -x
     cd "${BUILD_DIR:?}/${packageModel[name]}"
     version=$(dpkg-parsechangelog --show-field Version)
     cd "$BUILD_DIR"
