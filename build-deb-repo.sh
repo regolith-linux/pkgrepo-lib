@@ -15,6 +15,8 @@ if [ -f lib/creche/build-common.sh ]; then
     source lib/creche/build-common.sh
 elif [ -f build-common.sh ]; then
     source build-common.sh
+elif [ -f /tmp/creche/build-common.sh ]; then
+    source /tmp/creche/build-common.sh
 else
     echo "Unable to find build-common.sh, aborting."
     exit 1
